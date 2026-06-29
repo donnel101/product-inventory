@@ -19,7 +19,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'sku' => [
-                'sometimes',
+                'required',
                 'string',
                 'max:255',
                 Rule::unique('products', 'sku')->ignore($productId),
@@ -27,6 +27,13 @@ class UpdateProductRequest extends FormRequest
             'description' => 'nullable|string',
             'price' => 'sometimes|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'sku' => 'sku is required.',
         ];
     }
 }

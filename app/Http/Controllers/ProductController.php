@@ -59,17 +59,25 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, $id)
     {
+        $product = Product::find($id);
+        if(!$product){
+            return response()->json(['message' => 'Product not Found'],404);
+        }
         $product->update($request->validated());
 
         return new ProductResource($product);
     }
 
-    public function destroy(Product $product)
+    public function destroy($id)
     {
+        $product = Product::find($id);
+        if(!$product){
+            return response()->json(['message' => 'Product not Found'],404);
+        }
         $product->delete();
 
-        return response()->json(['message' => 'Product deleted successfully']);
+        return response()->json(['message' => 'Product deleted successfully'],200);
     }
 }
