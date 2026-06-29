@@ -7,9 +7,20 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
+
+    protected $productService;
+
+    public function __construct(ProductService $productService)
+    {
+        $this->productService = $productService;
+    }
+
+
     public function index(Request $request)
     {
         // return $request;
@@ -52,18 +63,20 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::find($id);
-        if(!$product){
-            return response()->json(['message' => 'Product not Found'],404);
+        $product = $this->productService->isProductFound($id);
+        if ($product instanceof JsonResponse) {
+            // It's a JSON response (Product was not found), so return it immediately
+            return $product; 
         }
         return new ProductResource($product);
     }
 
     public function update(UpdateProductRequest $request, $id)
     {
-        $product = Product::find($id);
-        if(!$product){
-            return response()->json(['message' => 'Product not Found'],404);
+        $product = $this->productService->isProductFound($id);
+        if ($product instanceof JsonResponse) {
+            // It's a JSON response (Product was not found), so return it immediately
+            return $product; 
         }
         $product->update($request->validated());
 
@@ -72,9 +85,10 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::find($id);
-        if(!$product){
-            return response()->json(['message' => 'Product not Found'],404);
+        $product = $this->productService->isProductFound($id);
+        if ($product instanceof JsonResponse) {
+            // It's a JSON response (Product was not found), so return it immediately
+            return $product; 
         }
         $product->delete();
 
